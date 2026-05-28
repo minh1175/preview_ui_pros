@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IELTS Exam UI · Print</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ===== Print page setup ===== */
+    @page {
+      size: A4 landscape;
+      margin: 0.5cm;
+    }
+
+    html, body {
+      background: white !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      display: block !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      min-height: auto !important;
+      align-items: initial !important;
+      justify-content: initial !important;
+    }
+
+    .print-doc {
+      width: 100%;
+      padding: 24px;
+    }
+
+    .print-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #111827;
+      margin: 0 0 6px;
+    }
+    .print-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: #6B7280;
+      margin: 0 0 24px;
+    }
+
+    .print-page {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      page-break-after: always;
+      break-after: page;
+      align-items: start;
+    }
+    .print-page:last-child {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    .print-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .print-slot.empty { visibility: hidden; }
+
+    .print-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #6B7280;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .print-label .num {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: #3B82F6;
+      color: white;
+      text-align: center;
+      line-height: 22px;
+      font-weight: 800;
+      margin-right: 8px;
+      font-size: 11px;
+    }
+
+    /* Override phone scale for print — keep at native size */
+    .print-phone {
+      transform: scale(0.72);
+      transform-origin: top center;
+      margin-bottom: -240px;
+    }
+
+    /* Don't show the stage wrapper for print */
+    .print-phone .phone-shell {
+      box-shadow: 0 0 0 8px #1a1d24, 0 0 0 10px #2a2d34, 0 8px 20px -4px rgba(0,0,0,0.2);
+    }
+
+    @media print {
+      body { background: white; }
+      .print-phone .phone-shell {
+        box-shadow: 0 0 0 8px #1a1d24, 0 0 0 10px #2a2d34;
+      }
+    }
+
+    /* Hide animation flashing on the speaker screen */
+    .mic-btn { animation: none !important; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" data-presets="react" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" data-presets="react" src="shared.jsx"></script>
+  <script type="text/babel" data-presets="react" src="screens-pre.jsx"></script>
+  <script type="text/babel" data-presets="react" src="screens-exam.jsx"></script>
+  <script type="text/babel" data-presets="react" src="screens-post.jsx"></script>
+
+  <script type="text/babel" data-presets="react">
+    const ALL_SCREENS = [
+      { key: 'home',         label: 'Trang chủ',           Comp: ScreenHome },
+      { key: 'overview',     label: 'Chi tiết đề thi',     Comp: ScreenOverview },
+      { key: 'instructions', label: 'Hướng dẫn',           Comp: ScreenInstructions },
+      { key: 'systemcheck',  label: 'Kiểm tra hệ thống',   Comp: ScreenSystemCheck },
+      { key: 'listening',    label: 'Listening',           Comp: ScreenListening },
+      { key: 'reading',      label: 'Reading',             Comp: ScreenReading },
+      { key: 'writing',      label: 'Writing',             Comp: ScreenWriting },
+      { key: 'speaking',     label: 'Speaking',            Comp: ScreenSpeaking },
+      { key: 'submitting',   label: 'Đang xử lý bài thi',  Comp: ScreenSubmitting },
+      { key: 'congrats',     label: 'Nộp bài thành công',  Comp: ScreenCongrats },
+      { key: 'results',      label: 'Kết quả',             Comp: ScreenResults },
+    ];
+
+    function Slot({ idx, screen }) {
+      if (!screen) return <div className="print-slot empty" />;
+      const { label, Comp } = screen;
+      return (
+        <div className="print-slot">
+          <div className="print-label">
+            <span className="num">{String(idx + 1).padStart(2, '0')}</span>
+            {label}
+          </div>
+          <div className="print-phone">
+            <div className="phone-shell">
+              <div className="phone-screen">
+                <Comp go={() => {}} />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function PrintDoc() {
+      // 2 phones per page
+      const pages = [];
+      for (let i = 0; i < ALL_SCREENS.length; i += 2) {
+        pages.push([ALL_SCREENS[i], ALL_SCREENS[i + 1]]);
+      }
+      return (
+        <div className="print-doc">
+          <h1 className="print-title">IELTS Exam UI · Edly mobile</h1>
+          <p className="print-sub">
+            Luồng làm bài thi IELTS Academic — trước khi thi, trong khi thi, và sau khi thi. 11 màn hình.
+          </p>
+          {pages.map((p, i) => (
+            <div className="print-page" key={i}>
+              <Slot idx={i * 2} screen={p[0]} />
+              <Slot idx={i * 2 + 1} screen={p[1]} />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<PrintDoc />);
+
+    // Auto-print after fonts + render settle
+    (async () => {
+      try { await document.fonts.ready; } catch (e) {}
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      setTimeout(() => window.print(), 800);
+    })();
+  </script>
+</body>
+</html>
